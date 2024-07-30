@@ -38,6 +38,8 @@ class UserArray:
                 if user.passwordhash == passwordhash:
                     return user
         return None
+    def AddUser(self, user):
+        self.users.append(user)
 
 class GroupArray:
     def __init__(self, groups):
