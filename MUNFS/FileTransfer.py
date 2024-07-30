@@ -1,22 +1,32 @@
 from . import Security
 import os
 
-def SendFile(requestee, groups, permissions, file, connection, recursive):
-    if os.path.isdir(file):
-        connection.Send({"type":1, "name":file[5:], "permissions":permissions})
+def SendFileServer(requestee, groups, file, connection, recursive):
+    if os.path.isdir("Files/" + requestee.username + "/" + file):
+        connection.Send({"message":"<DATA>", "type":1, "name":file.split("/")[-1]}, True)
+        connection.RecieveAll()
         files = os.listdir()
         if recursive:
             for newfile in files:
                 GetFile(requestee, groups, f"{file}/{newfile}", connection, True)
     else:
-        with open(file, "r") as f:
-            connection.Send({"type":0, "name":file[5:], "content":f.read(), "permissions":permissions})
+        with open("Files/" + requestee.username + "/" + file, "r") as f:
+            connection.Send({"message":"<DATA>", "type":0, "name":file.split("/")[-1], "content":f.read()}, True)
+        connection.RecieveAll()
 
 def GetFile(requestee, groups, file, connection, recursive=False):
     if Security.CheckPermissions(requestee, groups, file)[1]:
-        files = "Files/" + requestee.username + "/" + file
+        SendFileServer(requestee, groups, file, connection, recursive)
 
-def UploadFile(requestee, groups, file, connection, recursive=False):
-    if Security.CheckPermissions(requestee, groups, file)[1]:
-        files = "Files/" + requestee.username + "/" + file
-    
+def SendFileUser(file, connection, recursive):
+    if os.path.isdir(file):
+        connection.Send({"message":"<DATA>", "type":1, "name":file.split("/")[-1]}, True)
+        connection.RecieveAll()
+        files = os.listdir()
+        if recursive:
+            for newfile in files:
+                SendFileUser(f"{file}/{newfile}", connection, True)
+    else:
+        with open(file, "r") as f:
+            connection.Send({"message":"<DATA>", "type":0, "name":file.split("/")[-1], "content":f.read()}, True)
+        connection.RecieveAll()
