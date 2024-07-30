@@ -302,6 +302,7 @@ class Server:
                                 with open("Used.dat", "a") as f:
                                     f.write(f",{uid}")
                                 userstring = f"{username},{passwordhash},{uid},0"
+                                print(userstring)
                                 with open("Users.csv", "a") as f:
                                     f.write("\n")
                                     f.write(userstring)
