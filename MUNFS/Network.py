@@ -13,7 +13,10 @@ from . import Logging
 def GetDir(user, request, directory):
     valid = True
     directorysplit = directory.split("/")
-    newdir = request["content"][0].split("/")
+    try:
+        newdir = request["content"][0].split("/")
+    except IndexError:
+        return directory, True
     if directorysplit[0] == "":
         directorysplit = []
     if newdir[0] == "":
