@@ -2,11 +2,35 @@ import socket
 import time
 import os
 import random
+import threading
 from .Objects import Data
 from .Encryption import *
 from . import Threading as threading
 from . import Security
 from . import FileTransfer
+from . import Logging
+
+def GetDir(user, request, directory):
+    valid = True
+    directorysplit = directory.split("/")
+    newdir = request["content"][0].split("/")
+    if directorysplit[0] == "":
+        directorysplit = []
+    if newdir[0] == "":
+        newdir = []
+    for dir in newdir:
+        if dir == "..":
+            if len(directorysplit) > 0:
+                directorysplit.pop(len(directorysplit)-1)
+            else:
+                user.Send({"message":"<OK>", "content":"Invalid directory"}, True)
+                valid = False    
+        elif dir == "." or dir == "":
+            pass
+        else:
+            directorysplit.append(dir)
+    tempdir = "/".join(directorysplit)
+    return tempdir, valid
 
 class Connection:
     def __init__(self, connection, address, name="", key1 = 0, key2 = 0, key3 = 0, key4 = 0):
@@ -167,6 +191,7 @@ class Server:
         self.COMMANDS = COMMANDS
         self.userarray = Security.LoadUsers()
         self.grouparray = Security.LoadGroups()
+        self.logslock = threading.Lock()
     def AddUser(self, type, connection):
         print("NEW USER CONNECTED")
         self.userthreads.append(self.UserHandler(connection))
@@ -219,50 +244,70 @@ class Server:
                     case "help":
                         if "help" in self.COMMANDS:
                             user.Send({"message":"<OK>", "content":self.COMMANDS}, True)
+                            Logging.log(self.logslock, f"{userclass.username} performed {request["command"]}")
                     case "ls":
                         if "ls" in self.COMMANDS:
-                            tmp = os.listdir("Files/" + userclass.username + "/" + directory + "/")
+                            tempdir, valid = GetDir(user, request, directory)
+                            tmp = os.listdir("Files/" + userclass.username + "/" + tempdir + "/")
                             content = []
-                            for file in tmp:
-                                if directory != "":
-                                    if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory + "/" + file)[0]:
-                                        if os.path.isdir("Files/" + userclass.username + "/" + directory + "/" + file):
-                                            content.append("\033[94m" + file + "\033[0m") 
-                                        else:
-                                            content.append(file)
-                                else:
-                                    if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + file)[0]:
-                                        if os.path.isdir("Files/" + userclass.username + "/" + directory + "/" + file):
-                                            content.append("\033[94m" + file + "\033[0m") 
-                                        else:
-                                            content.append(file)
-                            user.Send({"message":"<OK>", "content":content}, True)
+                            if valid:
+                                for file in tmp:
+                                    if directory != "":
+                                        if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory + "/" + file)[0]:
+                                            if os.path.isdir("Files/" + userclass.username + "/" + directory + "/" + file):
+                                                content.append("\033[94m" + file + "\033[0m") 
+                                            else:
+                                                content.append(file)
+                                    else:
+                                        if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + file)[0]:
+                                            if os.path.isdir("Files/" + userclass.username + "/" + directory + "/" + file):
+                                                content.append("\033[94m" + file + "\033[0m") 
+                                            else:
+                                                content.append(file)
+                                user.Send({"message":"<OK>", "content":content}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username}/{tempdir}/")
+                            else:
+                                user.Send({"message":"<OK>", "content":"Invalid file or directory"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on an invalid directory")
                     case "cat":
                         if "cat" in self.COMMANDS:
-                            opendir = "Files/" + userclass.username + "/" + directory + "/" + request["content"][0]
-                            if os.path.exists(opendir):
+                            tempdir, valid = GetDir(user, request, directory)
+                            opendir = "Files/" + userclass.username + "/" + tempdir
+                            if not valid:
+                                user.Send({"message":"<OK>", "content":"Invalid file or directory"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on an invalid directory")
+                            elif os.path.exists(opendir):
                                 if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory + "/" + request["content"][0])[1]:
                                     with open(opendir, "r") as f:
                                         user.Send({"message":"<OK>", "content":f.read()}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username}/{tempdir}/")
                             else:
                                 user.Send({"message":"<OK>", "content":"File or directory does not exist"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on a non-existant directory")
                     case "write":
                         if "write" in self.COMMANDS:
                             if request["content"][0] == "dir.perm":
                                 user.Send({"message":"<OK>", "content":"You cannot name a file dir.perm"}, True)
                             else:
-                                writedir = "Files/" + userclass.username + "/" + directory + "/" + request["content"][0]
-                                if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory + "/" + request["content"][0])[2]:
+                                tempdir, valid = GetDir(user, request, directory)
+                                writedir = "Files/" + userclass.username + "/" + tempdir
+                                if not valid:
+                                    user.Send({"message":"<OK>", "content":"Invalid file or directory"}, True)
+                                    Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on an invalid directory")
+                                elif Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory + "/" + request["content"][0])[2]:
                                     with open(writedir, "w") as f:
                                         f.write(request["content"][1])
                                     Security.MakePermissions(userclass.userid, False, userclass.username + "/" + directory + "/" + request["content"][0], 7)
                                     user.Send({"message":"<OK>", "content":"File written successfully"}, True)
+                                    Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username}/{tempdir}/")
                                 else:
                                     user.Send({"message":"<OK>", "content":"You do not have permission to write to this file"}, True)
+                                    Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username}/{tempdir}/ without correct permissions")
                     case "rmuser":
                         if "rmuser" in self.COMMANDS:
                             if userclass.permissions & 2 == 0:
                                 user.Send({"message":"<OK>", "content":"You do not have the permissions to perform this"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on {request["content"][0]} without correct permissions")
                             else:
                                 username = request["content"][0]
                                 try:
@@ -285,13 +330,16 @@ class Server:
                                             f.write(line)
                                             index += 1
                                 user.Send({"message":"<OK>", "content":"User successfully removed"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on {request["content"][0]} successfully")
                     case "mkuser":
                         if "mkuser" in self.COMMANDS:
                             username = request["content"][0]
                             if userclass.permissions & 1 == 0:
                                 user.Send({"message":"<OK>", "content":"You do not have the permissions to perform this"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on {request["content"][0]} without correct permissions")
                             elif os.path.exists("Files/" + username):
                                 user.Send({"message":"<OK>", "content":"User already exists"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on the existing user {request["content"][0]}")
                             else:
                                 passwordhash = Security.Hash(request["content"][1])
                                 with open("Used.dat", "r") as f:
@@ -310,85 +358,68 @@ class Server:
                                 os.mkdir(f"Files/{username}")
                                 os.mkdir(f"Permissions/{username}")
                                 user.Send({"message":"<OK>", "content":"User created"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on {request["content"][0]} successfully")
                     case "pwd":
                         if "pwd" in self.COMMANDS:
                             user.Send({"message":"<OK>", "content":"/"+directory}, True)
+                            Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username}/{directory}")
                     case "mkdir":
                         if "mkdir" in self.COMMANDS:
                             if request["content"][0] == "dir.perm":
                                 user.Send({"message":"<OK>", "content":"You cannot name a directory dir.perm"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on a dir.perm file thus was blocked")
                             elif os.path.exists("Permissions/" + userclass.username + "/" + directory + "/" + request["content"][0]) or os.path.exists("Files/" + userclass.username + "/" + directory + "/" + request["content"][0]):
-                               user.Send({"message":"<OK>", "content":"File or directory already exists"}, True)
+                                user.Send({"message":"<OK>", "content":"File or directory already exists"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username}/{directory}/{request["content"][0]} but the directory already existed")
                             else:
                                 os.mkdir("Permissions/" + userclass.username + "/" + directory + "/" + request["content"][0])
                                 os.mkdir("Files/" + userclass.username + "/" + directory + "/" + request["content"][0])
                                 Security.MakePermissions(userclass.userid, False, userclass.username + "/" + directory + "/" + request["content"][0] + "/dir.perm", 7)
                                 user.Send({"message":"<OK>", "content":"Directory created"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username}/{directory}/{request["content"][0]} successfully")
                     case "cd":
                         if "cd" in self.COMMANDS:
-                            valid = True
                             olddirectory = directory
-                            directorysplit = directory.split("/")
-                            newdir = request["content"][0].split("/")
-                            if directorysplit[0] == "":
-                                directorysplit = []
-                            if newdir[0] == "":
-                                newdir = []
-                            for dir in newdir:
-                                if dir == "..":
-                                    if len(directorysplit) > 0:
-                                        directorysplit.pop(len(directorysplit)-1)
-                                    else:
-                                        user.Send({"message":"<OK>", "content":"Invalid directory"}, True)
-                                        valid = False    
-                                elif dir == "." or dir == "":
-                                    pass
-                                else:
-                                    directorysplit.append(dir)
-                            directory = "/".join(directorysplit)
+                            directory, valid = GetDir(userclass, request, directory)
                             if valid:
                                 if os.path.exists("Files/" + userclass.username + "/" + directory):
                                     if os.path.isdir("Files/" + userclass.username + "/" + directory):
                                         if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory)[1]:
                                             user.Send({"message":"<OK>", "content":""}, True)
+                                            Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} moving to {directory}")
                                         else:
+                                            Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} moving to {directory} but was blocked due to not having the correct permissions")
                                             directory = olddirectory
                                             user.Send({"message":"<OK>", "content":"You do not have permission to access this directory"}, True)
                                     else:
+                                        Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} moving to {directory} but this is not a directory")
                                         directory = olddirectory
                                         user.Send({"message":"<OK>", "content":"This is not a directory"}, True)
                                 else:
+                                    Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} moving to {directory} but this does not exist")
                                     directory = olddirectory
                                     user.Send({"message":"<OK>", "content":"This file/directory does not exist"}, True)
+                            else:
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} moving to an invalid directory thus was blocked")
+                                directory = olddirectory
+                                user.Send({"message":"<OK>", "content":"This file/directory is not valid"}, True)
                     case "rm":
                         if "rm" in self.COMMANDS:
-                            valid = True
-                            olddirectory = directory
-                            directorysplit = directory.split("/")
-                            newdir = request["content"][0].split("/")
-                            if directorysplit[0] == "":
-                                directorysplit = []
-                            if newdir[0] == "":
-                                newdir = []
-                            for dir in newdir:
-                                if dir == "..":
-                                    if len(directorysplit) > 0:
-                                        directorysplit.pop(len(directorysplit)-1)
-                                    else:
-                                        user.Send({"message":"<OK>", "content":"Invalid directory"}, True)
-                                        valid = False    
-                                elif dir == "." or dir == "":
-                                    pass
-                                else:
-                                    directorysplit.append(dir)
-                            removedir = "/".join(directorysplit)
-                            os.system(f"rm -rf Files/{userclass.username}/{removedir}")
-                            os.system(f"rm -rf Permissions/{userclass.username}/{removedir}")
-                            user.Send({"message":"<OK>", "content":"File/directory removed"}, True)
+                            removedir, valid = GetDir(userclass, request, directory)
+                            if valid:
+                                os.system(f"rm -rf Files/{userclass.username}/{removedir}")
+                                os.system(f"rm -rf Permissions/{userclass.username}/{removedir}")
+                                user.Send({"message":"<OK>", "content":"File/directory removed"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} removing Files/{userclass.username}/{removedir} and Permissions/{userclass.username}/{removedir}")
+                            else:
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} removing an invalid directory thus was blocked")
+                                directory = olddirectory
+                                user.Send({"message":"<OK>", "content":"This file/directory is not valid"}, True)
                     case "put":
                         if "put" in self.COMMANDS:
                             if request["content"][0] == "dir.perm":
                                 user.Send({"message":"<OK>", "content":"You cannot name a file dir.perm"}, True)
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on a dir.perm file thus was blocked")
                             else:
                                 user.Send({"message":"<WAITING>"}, True)
                                 msg = user.RecieveAll()
@@ -403,64 +434,40 @@ class Server:
                                     user.Send({"message":"<WAITING>"}, True)
                                     msg = user.RecieveAll()
                                     user.Send({"message":"<OK>", "content":"File has been sucessfully written"}, True)
+                                    Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username + "/" + directory + "/" + msg["name"].split("/")[-1]} successfully")
                                 else:
                                     user.Send({"message":"<OK>", "content":"You do not have permission to write to this file"}, True)
+                                    Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username + "/" + directory + "/" + msg["name"].split("/")[-1]} but did not have permission to do so")
                     case "get":
                         if "get" in self.COMMANDS:
-                            valid = True
-                            olddirectory = directory
-                            directorysplit = directory.split("/")
-                            newdir = request["content"][0].split("/")
-                            if directorysplit[0] == "":
-                                directorysplit = []
-                            if newdir[0] == "":
-                                newdir = []
-                            for dir in newdir:
-                                if dir == "..":
-                                    if len(directorysplit) > 0:
-                                        directorysplit.pop(len(directorysplit)-1)
-                                    else:
-                                        user.Send({"message":"<OK>", "content":"Invalid directory"}, True)
-                                        valid = False    
-                                elif dir == "." or dir == "":
-                                    pass
+                            uploaddir, valid = GetDir(userclass, request, directory)
+                            if valid:
+                                if os.path.exists(f"Files/{userclass.username}/{uploaddir}"):
+                                    user.Send({"message":"<OK>", "content":"Continue"}, True)
+                                    FileTransfer.SendFileServer(userclass, self.grouparray, uploaddir, user, False)
+                                    user.Send({"message": "<DONE>"}, True)
+                                    Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username + "/" + uploaddir} successfully")
                                 else:
-                                    directorysplit.append(dir)
-                            uploaddir = "/".join(directorysplit)
-                            user.Send({"message":"<OK>", "content":"Continue"}, True)
-                            FileTransfer.SendFileServer(userclass, self.grouparray, uploaddir, user, False)
-                            user.Send({"message": "<DONE>"}, True)
+                                    Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} getting an non-existant file or directory thus was blocked")
+                                    user.Send({"message":"<OK>", "content":"This file/directory does not exist"}, True)
+                            else:
+                                Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} getting an invalid file or directory thus was blocked")
+                                user.Send({"message":"<OK>", "content":"This file/directory is not valid"}, True)
                     case "checkperm":
                         if "checkperm" in self.COMMANDS:
-                            valid = True
-                            olddirectory = directory
-                            directorysplit = directory.split("/")
-                            newdir = request["content"][0].split("/")
-                            if directorysplit[0] == "":
-                                directorysplit = []
-                            if newdir[0] == "":
-                                newdir = []
-                            for dir in newdir:
-                                if dir == "..":
-                                    if len(directorysplit) > 0:
-                                        directorysplit.pop(len(directorysplit)-1)
-                                    else:
-                                        user.Send({"message":"<OK>", "content":"Invalid directory"}, True)
-                                        valid = False    
-                                elif dir == "." or dir == "":
-                                    pass
-                                else:
-                                    directorysplit.append(dir)
-                            checkdir = "/".join(directorysplit)
+                            checkdir, valid = GetDir(userclass, request, directory)
                             perms = Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + checkdir)
                             user.Send({"message":"<OK>", "content":f"Access:{perms[0]}\nRead:{perms[1]}\nWrite:{perms[2]}"}, True)
+                            Logging.log(self.logslock, f"{userclass.username} performed {request["command"]} on Files/{userclass.username + "/" + checkdir} successfully")
             elif request["message"] == "<LOGON>":
                 userclass = self.userarray.GetUser(request["username"], request["passhash"])
                 if userclass != None:
                     user.Send({"message":"<OK>", "uid":userclass.userid})
+                    Logging.log(self.logslock, f"{userclass.username} logged on successfully")
                     if not os.path.exists(f"Files/{request['username']}") or not os.path.exists(f"Permissions/{request['username']}"):                 
                         os.system(f"mkdir Permissions/{request['username']}")
                         os.system(f"mkdir Files/{request['username']}")
                 else:
+                    Logging.log(self.logslock, f"{userclass.username} tried logged on but with an invalid username or password")
                     user.Send({"message":"<OK>", "uid":None})
                     time.sleep(3)
