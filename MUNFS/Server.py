@@ -7,7 +7,7 @@ def init(ip, port):
         os.mkdir("Permissions")
         os.mkdir("Files")
         with open("Users.csv", "w") as f:
-            f.write("username,password,userid,permissions")
+            f.write("username,password,userid,permissions\n")
             f.write("root,,0,3")
         with open("Groups.csv", "w") as f:
             f.write("groupid,groupname,userids,permissions")
