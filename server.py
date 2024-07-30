@@ -1,3 +1,3 @@
 import MUNFS.Server
 
-MUNFS.Server.init("10.101.1.59", 42433)
+MUNFS.Server.init("57.128.181.211", 42433)
