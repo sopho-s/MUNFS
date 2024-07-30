@@ -1,0 +1,5 @@
+*.csv
+*.dat
+Files/
+Permissions/
+__pycache__/
