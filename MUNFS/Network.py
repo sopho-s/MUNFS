@@ -471,6 +471,6 @@ class Server:
                         os.system(f"mkdir Permissions/{request['username']}")
                         os.system(f"mkdir Files/{request['username']}")
                 else:
-                    Logging.Log(self.logslock, f"{userclass.username} tried logged on but with an invalid username or password")
+                    Logging.Log(self.logslock, f"{request["username"]} tried logged on but with an invalid username or password")
                     user.Send({"message":"<OK>", "uid":None})
                     time.sleep(3)
