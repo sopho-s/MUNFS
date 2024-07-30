@@ -2,7 +2,7 @@ import socket
 import time
 import os
 import random
-import threading
+import threading as th
 from .Objects import Data
 from .Encryption import *
 from . import Threading as threading
@@ -191,7 +191,7 @@ class Server:
         self.COMMANDS = COMMANDS
         self.userarray = Security.LoadUsers()
         self.grouparray = Security.LoadGroups()
-        self.logslock = threading.Lock()
+        self.logslock = th.Lock()
     def AddUser(self, type, connection):
         print("NEW USER CONNECTED")
         self.userthreads.append(self.UserHandler(connection))
