@@ -1,5 +1,5 @@
-import time
+from datetime import datetime
 def Log(threadlock, logdata):
     with threadlock:
         with open("server.log", "a") as f:
-            f.write(f"{time.gmtime()}> {logdata}\n\n")
+            f.write(f"{datetime.now()}> {logdata}\n\n")
