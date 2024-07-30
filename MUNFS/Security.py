@@ -55,7 +55,12 @@ class GroupArray:
         return groups
 
 def CheckPermissions(user, groups, file):
-    permissionfile = "Permissions/" + file
+    if os.path.isdir("Permissions/" + file):
+        permissionfile = "Permissions/" + file + "/dir.perm" 
+    else:
+        permissionfile = "Permissions/" + file
+    if not os.path.exists(permissionfile):
+        return (True, True, True)
     permissions = pd.read_csv(permissionfile)
     access = False
     read = False
@@ -70,13 +75,25 @@ def CheckPermissions(user, groups, file):
                         read = read or permission["read"]
                         write = write or permission["write"]
     for index, permission in permissions.iterrows():
-        print(permission)
         if permission["isuser"]:
             if permission["id"] == user.userid:
                 access = access or permission["access"]
                 read = read or permission["read"]
                 write = write or permission["write"]
     return (access, read, write)
+
+def MakePermissions(id, isgroup, file, permissions):
+    permissionfile = "Permissions/" + file
+    if os.path.exists(permissionfile):
+        return False
+    else:
+        with open(permissionfile, "w") as f:
+            f.write("access,read,write,isgroup,isuser,id\n")
+            access = "true" if permissions & 1 == 1 else "false"
+            read = "true" if permissions & 2 == 2 else "false"
+            write = "true" if permissions & 4 == 4 else "false"
+            f.write(f"{access},{read},{write},{isgroup},{not isgroup},{id}")
+    return True
         
 
 def LoadUsers():

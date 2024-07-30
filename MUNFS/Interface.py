@@ -11,16 +11,35 @@ def interface(client, uid):
                 case "help":
                     commands = client.SendCommandBasic("help")
                     commands.append("exit")
+                    commands.append("clear")
                     for i in range(len(commands)):
                         if i % 4 == 0 and i != 0:
                             print("\n")
                         print(commands[i], end="\t\t")
+                    print("\n")
                 case "ls":
                     files = client.SendCommandBasic("ls")
                     for file in files:
                         print(file, end="  ")
+                    print("\n")
                 case "cat":
                     output = client.SendCommandBasic("cat", request[1:])
+                    print(output)
+                case "write":
+                    eof = request[2]
+                    file = ""
+                    index = 0
+                    while True:
+                        line = input("> ")
+                        if line != eof:
+                            if index > 0:
+                                file += "\n"
+                            file += line
+                            index += 1
+                        else:
+                            break
+                    request[2] = file
+                    output = client.SendCommandBasic("write", request[1:])
                     print(output)
                 case "mkuser":
                     output = client.SendCommandBasic("mkuser", request[1:])
@@ -31,7 +50,18 @@ def interface(client, uid):
                 case "exit":
                     client.EndConnection()
                     return
-            print("\n")
+                case "clear":
+                    print(chr(27) + "[2J")
+                    print(chr(27) + "[H")
+                case "pwd":
+                    output = client.SendCommandBasic("pwd", request[1:])
+                    print(output)
+                case "mkdir":
+                    output = client.SendCommandBasic("mkdir", request[1:])
+                    print(output)
+                case "cd":
+                    output = client.SendCommandBasic("cd", request[1:])
+                    print(output)
     except KeyboardInterrupt:
         print("\nIf you wish to exit use the command exit")
         interface(client, uid)
