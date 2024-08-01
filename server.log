@@ -1,0 +1,594 @@
+2024-08-01 16:23:41.172079> root logged on successfully
+
+2024-08-01 16:23:47.757252> root performed put on Files/root//MUNFS successfully
+
+2024-08-01 16:23:47.845073> root performed put on Files/root//MUNFS/Logging.py successfully
+
+2024-08-01 16:23:47.937173> root performed put on Files/root//MUNFS/Sanatise.py successfully
+
+2024-08-01 16:23:48.029331> root performed put on Files/root//MUNFS/Security.py successfully
+
+2024-08-01 16:23:48.121770> root performed put on Files/root//MUNFS/Threading.py successfully
+
+2024-08-01 16:23:48.165896> root performed put on Files/root//MUNFS/Network.py successfully
+
+2024-08-01 16:23:48.253227> root performed put on Files/root//MUNFS/FileTransfer.py successfully
+
+2024-08-01 16:23:48.341214> root performed put on Files/root//MUNFS/__pycache__ successfully
+
+2024-08-01 16:23:48.429166> root performed put on Files/root//MUNFS/__pycache__/Logging.cpython-311.pyc successfully
+
+2024-08-01 16:23:48.521315> root performed put on Files/root//MUNFS/__pycache__/Encryption.cpython-311.pyc successfully
+
+2024-08-01 16:23:48.609122> root performed put on Files/root//MUNFS/__pycache__/Server.cpython-311.pyc successfully
+
+2024-08-01 16:23:48.701240> root performed put on Files/root//MUNFS/__pycache__/Threading.cpython-311.pyc successfully
+
+2024-08-01 16:23:48.793297> root performed put on Files/root//MUNFS/__pycache__/Security.cpython-311.pyc successfully
+
+2024-08-01 16:23:48.837550> root performed put on Files/root//MUNFS/__pycache__/FileTransfer.cpython-311.pyc successfully
+
+2024-08-01 16:23:48.929154> root performed put on Files/root//MUNFS/__pycache__/Sanatise.cpython-311.pyc successfully
+
+2024-08-01 16:23:49.017257> root performed put on Files/root//MUNFS/__pycache__/Interface.cpython-311.pyc successfully
+
+2024-08-01 16:23:49.105228> root performed put on Files/root//MUNFS/__pycache__/__init__.cpython-311.pyc successfully
+
+2024-08-01 16:23:49.193604> root performed put on Files/root//MUNFS/__pycache__/Network.cpython-311.pyc successfully
+
+2024-08-01 16:23:49.281279> root performed put on Files/root//MUNFS/__pycache__/Objects.cpython-311.pyc successfully
+
+2024-08-01 16:23:49.373082> root performed put on Files/root//MUNFS/Encryption.py successfully
+
+2024-08-01 16:23:49.461178> root performed put on Files/root//MUNFS/Objects.py successfully
+
+2024-08-01 16:23:49.553049> root performed put on Files/root//MUNFS/__init__.py successfully
+
+2024-08-01 16:23:49.641144> root performed put on Files/root//MUNFS/Server.py successfully
+
+2024-08-01 16:23:49.729150> root performed put on Files/root//MUNFS/Interface.py successfully
+
+2024-08-01 16:26:18.011598> root logged on successfully
+
+2024-08-01 16:26:24.282739> root performed put on Files/root//MUNFS successfully
+
+2024-08-01 16:26:24.370884> root performed put on Files/root//MUNFS/Logging.py successfully
+
+2024-08-01 16:26:24.458893> root performed put on Files/root//MUNFS/Sanatise.py successfully
+
+2024-08-01 16:26:24.554935> root performed put on Files/root//MUNFS/Security.py successfully
+
+2024-08-01 16:26:24.642721> root performed put on Files/root//MUNFS/Threading.py successfully
+
+2024-08-01 16:26:24.691480> root performed put on Files/root//MUNFS/Network.py successfully
+
+2024-08-01 16:26:24.778738> root performed put on Files/root//MUNFS/FileTransfer.py successfully
+
+2024-08-01 16:26:24.866496> root performed put on Files/root//MUNFS/__pycache__ successfully
+
+2024-08-01 16:26:24.954546> root performed put on Files/root//MUNFS/__pycache__/Logging.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.046678> root performed put on Files/root//MUNFS/__pycache__/Encryption.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.138973> root performed put on Files/root//MUNFS/__pycache__/Server.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.226636> root performed put on Files/root//MUNFS/__pycache__/Threading.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.318973> root performed put on Files/root//MUNFS/__pycache__/Security.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.367076> root performed put on Files/root//MUNFS/__pycache__/FileTransfer.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.462663> root performed put on Files/root//MUNFS/__pycache__/Sanatise.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.554573> root performed put on Files/root//MUNFS/__pycache__/Interface.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.642588> root performed put on Files/root//MUNFS/__pycache__/__init__.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.731062> root performed put on Files/root//MUNFS/__pycache__/Network.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.818703> root performed put on Files/root//MUNFS/__pycache__/Objects.cpython-311.pyc successfully
+
+2024-08-01 16:26:25.906694> root performed put on Files/root//MUNFS/Encryption.py successfully
+
+2024-08-01 16:26:25.998517> root performed put on Files/root//MUNFS/Objects.py successfully
+
+2024-08-01 16:26:26.090678> root performed put on Files/root//MUNFS/__init__.py successfully
+
+2024-08-01 16:26:26.178668> root performed put on Files/root//MUNFS/Server.py successfully
+
+2024-08-01 16:26:26.266506> root performed put on Files/root//MUNFS/Interface.py successfully
+
+2024-08-01 16:27:17.851389> root logged on successfully
+
+2024-08-01 16:27:57.618945> root logged on successfully
+
+2024-08-01 16:30:28.817140> root logged on successfully
+
+2024-08-01 16:32:10.711036> root logged on successfully
+
+2024-08-01 16:34:42.236438> root logged on successfully
+
+2024-08-01 16:36:41.200807> root logged on successfully
+
+2024-08-01 16:36:49.074816> root performed put on Files/root//MUNFS successfully
+
+2024-08-01 16:38:04.776137> root logged on successfully
+
+2024-08-01 16:39:13.422004> root logged on successfully
+
+2024-08-01 16:40:46.240627> root logged on successfully
+
+2024-08-01 16:42:19.771727> root logged on successfully
+
+2024-08-01 16:42:25.068982> root performed get on Files/root/MUNFS successfully
+
+2024-08-01 16:42:52.095693> root logged on successfully
+
+2024-08-01 16:42:56.404934> root performed get on Files/root/MUNFS successfully
+
+2024-08-01 16:43:17.907258> root logged on successfully
+
+2024-08-01 16:43:23.852873> root performed get on Files/root/MUNFS successfully
+
+2024-08-01 16:43:28.472884> root performed help
+
+2024-08-01 16:43:30.993644> root performed rm removing Files/root/MUNFS and Permissions/root/MUNFS
+
+2024-08-01 16:43:32.533346> root performed ls on Files/root//
+
+2024-08-01 16:43:36.612988> root performed get getting an non-existant file or directory thus was blocked
+
+2024-08-01 16:43:48.800193> root logged on successfully
+
+2024-08-01 16:43:51.917342> root performed put on Files/root//MUNFS successfully
+
+2024-08-01 16:43:52.005340> root performed put on Files/root//MUNFS/Logging.py successfully
+
+2024-08-01 16:43:52.093270> root performed put on Files/root//MUNFS/Sanatise.py successfully
+
+2024-08-01 16:43:52.189226> root performed put on Files/root//MUNFS/Security.py successfully
+
+2024-08-01 16:43:52.277177> root performed put on Files/root//MUNFS/Threading.py successfully
+
+2024-08-01 16:43:52.322219> root performed put on Files/root//MUNFS/Network.py successfully
+
+2024-08-01 16:43:52.413369> root performed put on Files/root//MUNFS/FileTransfer.py successfully
+
+2024-08-01 16:43:52.505226> root performed put on Files/root//MUNFS/__pycache__ successfully
+
+2024-08-01 16:43:52.593188> root performed put on Files/root//MUNFS/__pycache__/Logging.cpython-311.pyc successfully
+
+2024-08-01 16:43:52.681259> root performed put on Files/root//MUNFS/__pycache__/Encryption.cpython-311.pyc successfully
+
+2024-08-01 16:43:52.769176> root performed put on Files/root//MUNFS/__pycache__/Server.cpython-311.pyc successfully
+
+2024-08-01 16:43:52.857247> root performed put on Files/root//MUNFS/__pycache__/Threading.cpython-311.pyc successfully
+
+2024-08-01 16:43:52.945253> root performed put on Files/root//MUNFS/__pycache__/Security.cpython-311.pyc successfully
+
+2024-08-01 16:43:52.989700> root performed put on Files/root//MUNFS/__pycache__/FileTransfer.cpython-311.pyc successfully
+
+2024-08-01 16:43:53.077795> root performed put on Files/root//MUNFS/__pycache__/Sanatise.cpython-311.pyc successfully
+
+2024-08-01 16:43:53.165275> root performed put on Files/root//MUNFS/__pycache__/Interface.cpython-311.pyc successfully
+
+2024-08-01 16:43:53.253261> root performed put on Files/root//MUNFS/__pycache__/__init__.cpython-311.pyc successfully
+
+2024-08-01 16:43:53.345700> root performed put on Files/root//MUNFS/__pycache__/Network.cpython-311.pyc successfully
+
+2024-08-01 16:43:53.433223> root performed put on Files/root//MUNFS/__pycache__/Objects.cpython-311.pyc successfully
+
+2024-08-01 16:43:53.521385> root performed put on Files/root//MUNFS/Encryption.py successfully
+
+2024-08-01 16:43:53.609234> root performed put on Files/root//MUNFS/Objects.py successfully
+
+2024-08-01 16:43:53.697185> root performed put on Files/root//MUNFS/__init__.py successfully
+
+2024-08-01 16:43:53.785397> root performed put on Files/root//MUNFS/Server.py successfully
+
+2024-08-01 16:43:53.880900> root performed put on Files/root//MUNFS/Interface.py successfully
+
+2024-08-01 16:43:59.808902> root performed get on Files/root/MUNFS successfully
+
+2024-08-01 16:44:02.525331> root performed rm removing Files/root/MUNFS and Permissions/root/MUNFS
+
+2024-08-01 16:44:23.272903> root performed get getting an non-existant file or directory thus was blocked
+
+2024-08-01 16:47:53.491196> root logged on successfully
+
+2024-08-01 16:47:55.584836> root performed get getting an non-existant file or directory thus was blocked
+
+2024-08-01 16:49:53.610491> root logged on successfully
+
+2024-08-01 16:49:56.252942> root performed get getting an non-existant file or directory thus was blocked
+
+2024-08-01 16:50:08.024950> root performed get getting an non-existant file or directory thus was blocked
+
+2024-08-01 16:50:11.200926> root performed get getting an non-existant file or directory thus was blocked
+
+2024-08-01 16:50:12.912344> root performed ls on Files/root//
+
+2024-08-01 16:50:21.189290> root performed put on Files/root//MUNFS successfully
+
+2024-08-01 16:50:21.277082> root performed put on Files/root//MUNFS/Logging.py successfully
+
+2024-08-01 16:50:21.373105> root performed put on Files/root//MUNFS/Sanatise.py successfully
+
+2024-08-01 16:50:21.461190> root performed put on Files/root//MUNFS/Security.py successfully
+
+2024-08-01 16:50:21.549144> root performed put on Files/root//MUNFS/Threading.py successfully
+
+2024-08-01 16:50:21.597988> root performed put on Files/root//MUNFS/Network.py successfully
+
+2024-08-01 16:50:21.693302> root performed put on Files/root//MUNFS/FileTransfer.py successfully
+
+2024-08-01 16:50:21.781152> root performed put on Files/root//MUNFS/__pycache__ successfully
+
+2024-08-01 16:50:21.873055> root performed put on Files/root//MUNFS/__pycache__/Logging.cpython-311.pyc successfully
+
+2024-08-01 16:50:21.969242> root performed put on Files/root//MUNFS/__pycache__/Encryption.cpython-311.pyc successfully
+
+2024-08-01 16:50:22.061345> root performed put on Files/root//MUNFS/__pycache__/Server.cpython-311.pyc successfully
+
+2024-08-01 16:50:22.149185> root performed put on Files/root//MUNFS/__pycache__/Threading.cpython-311.pyc successfully
+
+2024-08-01 16:50:22.241237> root performed put on Files/root//MUNFS/__pycache__/Security.cpython-311.pyc successfully
+
+2024-08-01 16:50:22.285751> root performed put on Files/root//MUNFS/__pycache__/FileTransfer.cpython-311.pyc successfully
+
+2024-08-01 16:50:22.373087> root performed put on Files/root//MUNFS/__pycache__/Sanatise.cpython-311.pyc successfully
+
+2024-08-01 16:50:22.465315> root performed put on Files/root//MUNFS/__pycache__/Interface.cpython-311.pyc successfully
+
+2024-08-01 16:50:22.561174> root performed put on Files/root//MUNFS/__pycache__/__init__.cpython-311.pyc successfully
+
+2024-08-01 16:50:22.653647> root performed put on Files/root//MUNFS/__pycache__/Network.cpython-311.pyc successfully
+
+2024-08-01 16:50:22.741252> root performed put on Files/root//MUNFS/__pycache__/Objects.cpython-311.pyc successfully
+
+2024-08-01 16:50:22.833220> root performed put on Files/root//MUNFS/Encryption.py successfully
+
+2024-08-01 16:50:22.921226> root performed put on Files/root//MUNFS/Objects.py successfully
+
+2024-08-01 16:50:23.009255> root performed put on Files/root//MUNFS/__init__.py successfully
+
+2024-08-01 16:50:23.097200> root performed put on Files/root//MUNFS/Server.py successfully
+
+2024-08-01 16:50:23.185206> root performed put on Files/root//MUNFS/Interface.py successfully
+
+2024-08-01 16:50:59.382515> root performed put on Files/root//MUNFS successfully
+
+2024-08-01 16:50:59.470536> root performed put on Files/root//MUNFS/Logging.py successfully
+
+2024-08-01 16:50:59.558760> root performed put on Files/root//MUNFS/Sanatise.py successfully
+
+2024-08-01 16:50:59.650836> root performed put on Files/root//MUNFS/Security.py successfully
+
+2024-08-01 16:50:59.746686> root performed put on Files/root//MUNFS/Threading.py successfully
+
+2024-08-01 16:50:59.834777> root performed put on Files/root//MUNFS/Network.py successfully
+
+2024-08-01 16:50:59.922636> root performed put on Files/root//MUNFS/FileTransfer.py successfully
+
+2024-08-01 16:51:00.010752> root performed put on Files/root//MUNFS/__pycache__ successfully
+
+2024-08-01 16:51:00.106711> root performed put on Files/root//MUNFS/__pycache__/Logging.cpython-311.pyc successfully
+
+2024-08-01 16:51:00.194670> root performed put on Files/root//MUNFS/__pycache__/Encryption.cpython-311.pyc successfully
+
+2024-08-01 16:51:00.287175> root performed put on Files/root//MUNFS/__pycache__/Server.cpython-311.pyc successfully
+
+2024-08-01 16:51:00.379394> root performed put on Files/root//MUNFS/__pycache__/Threading.cpython-311.pyc successfully
+
+2024-08-01 16:51:00.474917> root performed put on Files/root//MUNFS/__pycache__/Security.cpython-311.pyc successfully
+
+2024-08-01 16:51:00.564960> root performed put on Files/root//MUNFS/__pycache__/FileTransfer.cpython-311.pyc successfully
+
+2024-08-01 16:51:00.654559> root performed put on Files/root//MUNFS/__pycache__/Sanatise.cpython-311.pyc successfully
+
+2024-08-01 16:51:00.752762> root performed put on Files/root//MUNFS/__pycache__/Interface.cpython-311.pyc successfully
+
+2024-08-01 16:51:00.843247> root performed put on Files/root//MUNFS/__pycache__/__init__.cpython-311.pyc successfully
+
+2024-08-01 16:51:00.939870> root performed put on Files/root//MUNFS/__pycache__/Network.cpython-311.pyc successfully
+
+2024-08-01 16:51:01.026996> root performed put on Files/root//MUNFS/__pycache__/Objects.cpython-311.pyc successfully
+
+2024-08-01 16:51:01.116685> root performed put on Files/root//MUNFS/Encryption.py successfully
+
+2024-08-01 16:51:01.210494> root performed put on Files/root//MUNFS/Objects.py successfully
+
+2024-08-01 16:51:01.302477> root performed put on Files/root//MUNFS/__init__.py successfully
+
+2024-08-01 16:51:01.394547> root performed put on Files/root//MUNFS/Server.py successfully
+
+2024-08-01 16:51:01.486595> root performed put on Files/root//MUNFS/Interface.py successfully
+
+2024-08-01 16:52:18.573071> root performed ls on Files/root//
+
+2024-08-01 16:52:23.838441> root performed ls on Files/root//
+
+2024-08-01 16:52:30.036073> root performed ls on Files/root//
+
+2024-08-01 16:52:52.627805> root performed ls on Files/root//
+
+2024-08-01 16:52:56.074494> root performed cat on Files/root/readme/
+
+2024-08-01 16:53:01.265118> root performed put on Files/root//MUNFS successfully
+
+2024-08-01 16:53:01.357139> root performed put on Files/root//MUNFS/Logging.py successfully
+
+2024-08-01 16:53:01.445116> root performed put on Files/root//MUNFS/Sanatise.py successfully
+
+2024-08-01 16:53:01.533155> root performed put on Files/root//MUNFS/Security.py successfully
+
+2024-08-01 16:53:01.621107> root performed put on Files/root//MUNFS/Threading.py successfully
+
+2024-08-01 16:53:01.717278> root performed put on Files/root//MUNFS/Network.py successfully
+
+2024-08-01 16:53:01.809199> root performed put on Files/root//MUNFS/FileTransfer.py successfully
+
+2024-08-01 16:53:01.897167> root performed put on Files/root//MUNFS/__pycache__ successfully
+
+2024-08-01 16:53:01.985154> root performed put on Files/root//MUNFS/__pycache__/Logging.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.081241> root performed put on Files/root//MUNFS/__pycache__/Encryption.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.169226> root performed put on Files/root//MUNFS/__pycache__/Server.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.257233> root performed put on Files/root//MUNFS/__pycache__/Threading.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.345575> root performed put on Files/root//MUNFS/__pycache__/Security.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.433135> root performed put on Files/root//MUNFS/__pycache__/FileTransfer.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.525140> root performed put on Files/root//MUNFS/__pycache__/Sanatise.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.617246> root performed put on Files/root//MUNFS/__pycache__/Interface.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.705082> root performed put on Files/root//MUNFS/__pycache__/__init__.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.793499> root performed put on Files/root//MUNFS/__pycache__/Network.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.889262> root performed put on Files/root//MUNFS/__pycache__/Objects.cpython-311.pyc successfully
+
+2024-08-01 16:53:02.980663> root performed put on Files/root//MUNFS/Encryption.py successfully
+
+2024-08-01 16:53:03.069196> root performed put on Files/root//MUNFS/Objects.py successfully
+
+2024-08-01 16:53:03.157191> root performed put on Files/root//MUNFS/__init__.py successfully
+
+2024-08-01 16:53:03.245154> root performed put on Files/root//MUNFS/Server.py successfully
+
+2024-08-01 16:53:03.333129> root performed put on Files/root//MUNFS/Interface.py successfully
+
+2024-08-01 16:53:06.406387> root performed cd moving to MUNFS
+
+2024-08-01 16:53:10.754481> root performed cd moving to MUNFS/__pycache__
+
+2024-08-01 16:53:11.847214> root performed ls on Files/root/MUNFS/__pycache__/
+
+2024-08-01 22:20:21.921015> root logged on successfully
+
+2024-08-01 22:20:23.839154> root performed ls on Files/root//
+
+2024-08-01 22:20:31.980892> root performed get on Files/root/MUNFS successfully
+
+2024-08-01 22:20:40.358082> root performed rm removing Files/root/MUNFS and Permissions/root/MUNFS
+
+2024-08-01 22:20:41.456261> root performed ls on Files/root//
+
+2024-08-01 22:20:49.021212> root performed put on Files/root//MUNFS successfully
+
+2024-08-01 22:20:49.109084> root performed put on Files/root//MUNFS/Logging.py successfully
+
+2024-08-01 22:20:49.201186> root performed put on Files/root//MUNFS/Sanatise.py successfully
+
+2024-08-01 22:20:49.293235> root performed put on Files/root//MUNFS/Security.py successfully
+
+2024-08-01 22:20:49.381087> root performed put on Files/root//MUNFS/Threading.py successfully
+
+2024-08-01 22:20:49.425747> root performed put on Files/root//MUNFS/Network.py successfully
+
+2024-08-01 22:20:49.513842> root performed put on Files/root//MUNFS/FileTransfer.py successfully
+
+2024-08-01 22:20:49.605163> root performed put on Files/root//MUNFS/__pycache__ successfully
+
+2024-08-01 22:20:49.697143> root performed put on Files/root//MUNFS/__pycache__/Logging.cpython-311.pyc successfully
+
+2024-08-01 22:20:49.785268> root performed put on Files/root//MUNFS/__pycache__/Encryption.cpython-311.pyc successfully
+
+2024-08-01 22:20:49.877202> root performed put on Files/root//MUNFS/__pycache__/Server.cpython-311.pyc successfully
+
+2024-08-01 22:20:49.969138> root performed put on Files/root//MUNFS/__pycache__/Threading.cpython-311.pyc successfully
+
+2024-08-01 22:20:50.061149> root performed put on Files/root//MUNFS/__pycache__/Security.cpython-311.pyc successfully
+
+2024-08-01 22:20:50.105744> root performed put on Files/root//MUNFS/__pycache__/FileTransfer.cpython-311.pyc successfully
+
+2024-08-01 22:20:50.197263> root performed put on Files/root//MUNFS/__pycache__/Sanatise.cpython-311.pyc successfully
+
+2024-08-01 22:20:50.293257> root performed put on Files/root//MUNFS/__pycache__/Interface.cpython-311.pyc successfully
+
+2024-08-01 22:20:50.381287> root performed put on Files/root//MUNFS/__pycache__/__init__.cpython-311.pyc successfully
+
+2024-08-01 22:20:50.469564> root performed put on Files/root//MUNFS/__pycache__/Network.cpython-311.pyc successfully
+
+2024-08-01 22:20:50.557214> root performed put on Files/root//MUNFS/__pycache__/Objects.cpython-311.pyc successfully
+
+2024-08-01 22:20:50.649159> root performed put on Files/root//MUNFS/Encryption.py successfully
+
+2024-08-01 22:20:50.737077> root performed put on Files/root//MUNFS/Objects.py successfully
+
+2024-08-01 22:20:50.825099> root performed put on Files/root//MUNFS/__init__.py successfully
+
+2024-08-01 22:20:50.913096> root performed put on Files/root//MUNFS/Server.py successfully
+
+2024-08-01 22:20:51.009172> root performed put on Files/root//MUNFS/Interface.py successfully
+
+2024-08-01 23:02:15.250959> root logged on successfully
+
+2024-08-01 23:02:21.390941> root performed mkuser on nick successfully
+
+2024-08-01 23:03:21.113844> root logged on successfully
+
+2024-08-01 23:04:14.440947> root logged on successfully
+
+2024-08-01 23:05:39.956879> root logged on successfully
+
+2024-08-01 23:07:42.248849> root logged on successfully
+
+2024-08-01 23:07:54.803144> root shared Files/root/MUNFS to nick successfully
+
+2024-08-01 23:08:27.274166> root shared Files/root/readme to nick successfully
+
+2024-08-01 23:10:01.794474> root logged on successfully
+
+2024-08-01 23:10:07.293279> root shared Files/root/readme to nick successfully
+
+2024-08-01 23:11:18.437320> root logged on successfully
+
+2024-08-01 23:11:23.848726> root shared Files/root/readme to nick successfully
+
+2024-08-01 23:14:20.578567> root logged on successfully
+
+2024-08-01 23:14:52.063960> root logged on successfully
+
+2024-08-01 23:15:02.477594> root shared Files/root/readme to nick successfully
+
+2024-08-01 23:15:40.808501> root logged on successfully
+
+2024-08-01 23:15:47.553119> root shared Files/root/readme to nick successfully
+
+2024-08-01 23:17:33.414428> nick logged on successfully
+
+2024-08-01 23:17:35.096973> nick performed help
+
+2024-08-01 23:17:39.249238> nick performed ls on Files/nick//
+
+2024-08-01 23:17:43.217035> nick performed ls on Files/nick//
+
+2024-08-01 23:18:59.550856> root logged on successfully
+
+2024-08-01 23:19:10.657255> root shared Files/root/readme to nick successfully
+
+2024-08-01 23:19:27.093053> nick logged on successfully
+
+2024-08-01 23:19:28.176984> nick performed ls on Files/nick//
+
+2024-08-01 23:20:20.809024> nick performed ls on Files/nick//
+
+2024-08-01 23:21:09.484597> root logged on successfully
+
+2024-08-01 23:21:23.047062> root shared Files/root/readme to nick successfully
+
+2024-08-01 23:21:38.348618> nick logged on successfully
+
+2024-08-01 23:21:39.498116> nick performed ls on Files/nick//
+
+2024-08-01 23:21:52.189012> nick performed ls on Files/nick//
+
+2024-08-01 23:40:13.056150> nick logged on successfully
+
+2024-08-01 23:40:14.164939> nick performed help
+
+2024-08-01 23:40:19.148970> nick requested shares but had none
+
+2024-08-01 23:41:50.418012> nick logged on successfully
+
+2024-08-01 23:42:29.671474> nick logged on successfully
+
+2024-08-01 23:42:32.897161> nick requested shares but had none
+
+2024-08-01 23:44:03.944655> nick logged on successfully
+
+2024-08-01 23:44:48.037175> nick tried logged on but with an invalid username or password
+
+2024-08-01 23:44:54.636893> nick logged on successfully
+
+2024-08-01 23:44:59.425287> nick requested shares but had none
+
+2024-08-01 23:45:04.276978> nick performed help
+
+2024-08-01 23:46:07.195216> nick logged on successfully
+
+2024-08-01 23:47:21.692642> nick logged on successfully
+
+2024-08-01 23:47:28.169077> nick requested shares but had none
+
+2024-08-01 23:47:31.005059> nick performed ls on Files/nick//
+
+2024-08-01 23:48:56.543030> nick tried logged on but with an invalid username or password
+
+2024-08-01 23:49:02.248908> nick logged on successfully
+
+2024-08-01 23:50:04.962864> nick tried logged on but with an invalid username or password
+
+2024-08-01 23:50:10.924927> nick logged on successfully
+
+2024-08-01 23:50:54.509157> nick logged on successfully
+
+2024-08-01 23:51:01.697115> nick requested shares but had none
+
+2024-08-01 23:51:44.576376> nick logged on successfully
+
+2024-08-01 23:53:56.398670> nick logged on successfully
+
+2024-08-01 23:54:50.684239> nick logged on successfully
+
+2024-08-01 23:55:57.410727> nick logged on successfully
+
+2024-08-01 23:59:22.213042> nick logged on successfully
+
+2024-08-02 00:00:30.350204> nick logged on successfully
+
+2024-08-02 00:02:00.945515> nick logged on successfully
+
+2024-08-02 00:03:14.756074> nick logged on successfully
+
+2024-08-02 00:04:45.416343> nidk tried logged on but with an invalid username or password
+
+2024-08-02 00:04:51.273026> nick logged on successfully
+
+2024-08-02 00:05:38.898537> nick logged on successfully
+
+2024-08-02 00:06:51.896632> nick logged on successfully
+
+2024-08-02 00:08:53.852427> nick logged on successfully
+
+2024-08-02 00:09:45.755481> nick logged on successfully
+
+2024-08-02 00:11:25.780072> nick logged on successfully
+
+2024-08-02 00:12:18.322196> nick logged on successfully
+
+2024-08-02 00:14:37.875660> nick logged on successfully
+
+2024-08-02 00:15:04.553101> nick requested shares but had none
+
+2024-08-02 00:15:13.926774> nick performed ls on Files/nick//
+
+2024-08-02 00:15:16.718768> nick performed cat on Files/nick/readme/
+
+2024-08-02 00:15:33.194353> root logged on successfully
+
+2024-08-02 00:15:57.185439> root shared Files/root/MUNFS to nick successfully
+
+2024-08-02 00:16:10.816078> nick logged on successfully
+
+2024-08-02 00:16:11.456876> nick performed ls on Files/nick//
+
+2024-08-02 00:16:20.313585> nick requested shares but had none
+
+2024-08-02 00:16:30.226000> nick requested shares but had none
+
+2024-08-02 00:16:33.018603> nick performed ls on Files/nick//
+
+2024-08-02 00:16:38.735945> nick performed checkperm on Files/nick/MUNFS successfully
+
+2024-08-02 00:16:44.815511> nick performed cd moving to MUNFS
+
+2024-08-02 00:16:46.253989> nick performed ls on Files/nick/MUNFS/
+
+2024-08-02 00:16:54.935177> nick performed checkperm on Files/nick/MUNFS/Logging.py successfully
+

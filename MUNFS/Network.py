@@ -9,12 +9,13 @@ from . import Threading as threading
 from . import Security
 from . import FileTransfer
 from . import Logging
+from . import Sanatise
 
 def GetDir(user, request, directory):
     valid = True
     directorysplit = directory.split("/")
     try:
-        newdir = request["content"][0].split("/")
+        newdir = Sanatise.StripFilenames(request["content"][0]).split("/")
     except IndexError:
         return directory, True
     if directorysplit[0] == "":
@@ -128,12 +129,10 @@ class Client:
             message = {"key1" : [EncryptRSA(keyval, e, n) for keyval in key1list], "key2" : [EncryptRSA(keyval, e, n) for keyval in key2list], "key3" : [EncryptRSA(keyval, e, n) for keyval in key3list], "key4" : [EncryptRSA(keyval, e, n) for keyval in key4list]}
             s.sendall(Data(message).Encode())
             data = connection.Recieve(1024)
-            print(data)
             if data["message"] != "<VALID>":
                 raise Exception("RECEIVED INCORRECT RESPONSE")
             message = {"type" : "<" + clienttype + ">"}
             connection.Send(message)
-            print(clienttype + " CONNECTED")
             self.connection = connection
         except KeyboardInterrupt:
             os._exit(1)
@@ -149,34 +148,30 @@ class Client:
     def SendCommandBasic(self, command, content = ""):
         self.connection.Send({"message": "<COMMAND>", "command": command, "content": content}, True)
         msg = self.connection.RecieveAll()
+        if msg["hasshare"]:
+            print("Someone has shared a file with you")
         if msg["message"] == "<OK>":
             return msg["content"]
     def SendFile(self, command, content):
         self.connection.Send({"message": "<COMMAND>", "command": command, "content": content}, True)
         msg = self.connection.RecieveAll()
         if msg["message"] == "<WAITING>":
-           FileTransfer.SendFileUser(content[0], self.connection, False)
+           FileTransfer.SendFileUser(Sanatise.StripFilenames(content[0]), self.connection, len(Sanatise.StripFilenames(content[0]).split("/")), True)
         if msg["message"] == "<WAITING>":
             self.connection.Send({"message": "<DONE>"}, True)
         msg = self.connection.RecieveAll()
+        if msg["hasshare"]:
+            print("Someone has shared a file with you")
         if msg["message"] == "<OK>": 
             return msg["content"]
     def GetFile(self, command, content):
         self.connection.Send({"message": "<COMMAND>", "command": command, "content": content}, True)
         msg = self.connection.RecieveAll()
-        if msg["message"] == "<OK>" and msg["content"] == "Continue":
-            self.connection.Send({"message":"<WAITING>"}, True)
-        else:
-            return msg["content"]
-        msg = self.connection.RecieveAll()
-        if msg["type"] == 0:
-            with open(msg["name"].split("/")[-1], "w") as f:
-                f.write(msg["content"])
-        else:
-            os.mkdir(msg["name"].split("/")[-1])
-        self.connection.Send({"message":"<WAITING>"}, True)
-        msg = self.connection.RecieveAll()
-        return "File has been sucessfully downloaded"
+        while msg["message"] != "<DONE>":
+            msg = FileTransfer.RecieveFileUser(msg, self.connection)
+        if msg["hasshare"]:
+            print("Someone has shared a file with you")
+        return "Files has been sucessfully downloaded"
     def LogOn(self, username, password):
         passwordhash = Security.Hash(password)
         self.connection.Send({"message": "<LOGON>", "username": username, "passhash": passwordhash}, True)
@@ -185,7 +180,7 @@ class Client:
             return msg["uid"]
 
 class Server:
-    def __init__(self, HOST, PORT, COMMANDS=["help", "ls", "cat", "mkuser", "rmuser", "write", "pwd", "mkdir", "cd", "rm", "put", "get", "checkperm"]):
+    def __init__(self, HOST, PORT, COMMANDS=["help", "ls", "cat", "mkuser", "rmuser", "write", "pwd", "mkdir", "cd", "rm", "put", "get", "checkperm", "share", "checkshare", "receive"]):
         self.HOST = HOST
         self.PORT = PORT
         self.userthreads = []
@@ -195,9 +190,18 @@ class Server:
         self.userarray = Security.LoadUsers()
         self.grouparray = Security.LoadGroups()
         self.logslock = th.Lock()
+        self.usernotifarray = []
+        self.usernotiflock = th.Lock()
     def AddUser(self, type, connection):
         print("NEW USER CONNECTED")
         self.userthreads.append(self.UserHandler(connection))
+    def CheckNotif(self, user):
+        for index, notifuser in enumerate(self.usernotifarray):
+            if user.userid == notifuser:
+                with self.usernotiflock:
+                    self.usernotifarray.pop(index)
+                    return True
+        return False
     def StartServer(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
@@ -246,7 +250,7 @@ class Server:
                 match request["command"]:
                     case "help":
                         if "help" in self.COMMANDS:
-                            user.Send({"message":"<OK>", "content":self.COMMANDS}, True)
+                            user.Send({"message":"<OK>", "content":self.COMMANDS, "hasshare": self.CheckNotif(userclass)}, True)
                             Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f"")
                     case "ls":
                         if "ls" in self.COMMANDS:
@@ -255,61 +259,64 @@ class Server:
                             content = []
                             if valid:
                                 for file in tmp:
-                                    if directory != "":
-                                        if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory + "/" + file)[0]:
-                                            if os.path.isdir("Files/" + userclass.username + "/" + directory + "/" + file):
-                                                content.append("\033[94m" + file + "\033[0m") 
+                                    if tempdir != "":
+                                        if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + tempdir + "/" + file)[0]:
+                                            if os.path.isdir("Files/" + userclass.username + "/" + tempdir + "/" + file):
+                                                content.append("\033[94m\033[1m" + file + "\033[0m") 
                                             else:
                                                 content.append(file)
                                     else:
                                         if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + file)[0]:
-                                            if os.path.isdir("Files/" + userclass.username + "/" + directory + "/" + file):
-                                                content.append("\033[94m" + file + "\033[0m") 
+                                            if os.path.isdir("Files/" + userclass.username + "/" + tempdir + "/" + file):
+                                                content.append("\033[94m\033[1m" + file + "\033[0m") 
                                             else:
                                                 content.append(file)
-                                user.Send({"message":"<OK>", "content":content}, True)
+                                user.Send({"message":"<OK>", "content":content, "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{tempdir}/")
                             else:
-                                user.Send({"message":"<OK>", "content":"Invalid file or directory"}, True)
+                                user.Send({"message":"<OK>", "content":"Invalid file or directory", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on an invalid directory")
                     case "cat":
                         if "cat" in self.COMMANDS:
                             tempdir, valid = GetDir(user, request, directory)
                             opendir = "Files/" + userclass.username + "/" + tempdir
                             if not valid:
-                                user.Send({"message":"<OK>", "content":"Invalid file or directory"}, True)
-                                Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on an invalid directory")
+                                user.Send({"message":"<OK>", "content":"Invalid file or directory", "hasshare": self.CheckNotif(userclass)}, True)
+                                Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on an invalid file or directory")
+                            elif os.path.isdir(opendir):
+                                user.Send({"message":"<OK>", "content":"This is a directory and not a file", "hasshare": self.CheckNotif(userclass)}, True)
+                                Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on an directory and not a file")
                             elif os.path.exists(opendir):
                                 if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory + "/" + request["content"][0])[1]:
                                     with open(opendir, "r") as f:
-                                        user.Send({"message":"<OK>", "content":f.read()}, True)
+                                        user.Send({"message":"<OK>", "content":f.read(), "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{tempdir}/")
                             else:
-                                user.Send({"message":"<OK>", "content":"File or directory does not exist"}, True)
+                                user.Send({"message":"<OK>", "content":"File or directory does not exist", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on a non-existant directory")
                     case "write":
                         if "write" in self.COMMANDS:
                             if request["content"][0] == "dir.perm":
-                                user.Send({"message":"<OK>", "content":"You cannot name a file dir.perm"}, True)
+                                user.Send({"message":"<OK>", "content":"You cannot name a file dir.perm", "hasshare": self.CheckNotif(userclass)}, True)
                             else:
                                 tempdir, valid = GetDir(user, request, directory)
                                 writedir = "Files/" + userclass.username + "/" + tempdir
                                 if not valid:
-                                    user.Send({"message":"<OK>", "content":"Invalid file or directory"}, True)
+                                    user.Send({"message":"<OK>", "content":"Invalid file or directory", "hasshare": self.CheckNotif(userclass)}, True)
                                     Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on an invalid directory")
                                 elif Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory + "/" + request["content"][0])[2]:
                                     with open(writedir, "w") as f:
                                         f.write(request["content"][1])
                                     Security.MakePermissions(userclass.userid, False, userclass.username + "/" + directory + "/" + request["content"][0], 7)
-                                    user.Send({"message":"<OK>", "content":"File written successfully"}, True)
+                                    user.Send({"message":"<OK>", "content":"File written successfully", "hasshare": self.CheckNotif(userclass)}, True)
                                     Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{tempdir}/")
                                 else:
-                                    user.Send({"message":"<OK>", "content":"You do not have permission to write to this file"}, True)
+                                    user.Send({"message":"<OK>", "content":"You do not have permission to write to this file", "hasshare": self.CheckNotif(userclass)}, True)
                                     Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{tempdir}/ without correct permissions")
                     case "rmuser":
                         if "rmuser" in self.COMMANDS:
                             if userclass.permissions & 2 == 0:
-                                user.Send({"message":"<OK>", "content":"You do not have the permissions to perform this"}, True)
+                                user.Send({"message":"<OK>", "content":"You do not have the permissions to perform this", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on " + request["content"][0] + f" without correct permissions")
                             else:
                                 username = request["content"][0]
@@ -332,16 +339,16 @@ class Server:
                                         else:
                                             f.write(line)
                                             index += 1
-                                user.Send({"message":"<OK>", "content":"User successfully removed"}, True)
+                                user.Send({"message":"<OK>", "content":"User successfully removed", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on " + request["content"][0] + f" successfully")
                     case "mkuser":
                         if "mkuser" in self.COMMANDS:
                             username = request["content"][0]
                             if userclass.permissions & 1 == 0:
-                                user.Send({"message":"<OK>", "content":"You do not have the permissions to perform this"}, True)
+                                user.Send({"message":"<OK>", "content":"You do not have the permissions to perform this", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on " + request["content"][0] + f" without correct permissions")
                             elif os.path.exists("Files/" + username):
-                                user.Send({"message":"<OK>", "content":"User already exists"}, True)
+                                user.Send({"message":"<OK>", "content":"User already exists", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on the existing user " + request["content"][0] + f"")
                             else:
                                 passwordhash = Security.Hash(request["content"][1])
@@ -360,25 +367,25 @@ class Server:
                                     f.write(userstring)
                                 os.mkdir(f"Files/{username}")
                                 os.mkdir(f"Permissions/{username}")
-                                user.Send({"message":"<OK>", "content":"User created"}, True)
+                                user.Send({"message":"<OK>", "content":"User created", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on " + request["content"][0] + f" successfully")
                     case "pwd":
                         if "pwd" in self.COMMANDS:
-                            user.Send({"message":"<OK>", "content":"/"+directory}, True)
+                            user.Send({"message":"<OK>", "content":"/"+directory, "hasshare": self.CheckNotif(userclass)}, True)
                             Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{directory}")
                     case "mkdir":
                         if "mkdir" in self.COMMANDS:
                             if request["content"][0] == "dir.perm":
-                                user.Send({"message":"<OK>", "content":"You cannot name a directory dir.perm"}, True)
+                                user.Send({"message":"<OK>", "content":"You cannot name a directory dir.perm", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on a dir.perm file thus was blocked")
                             elif os.path.exists("Permissions/" + userclass.username + "/" + directory + "/" + request["content"][0]) or os.path.exists("Files/" + userclass.username + "/" + directory + "/" + request["content"][0]):
-                                user.Send({"message":"<OK>", "content":"File or directory already exists"}, True)
+                                user.Send({"message":"<OK>", "content":"File or directory already exists", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{directory}/" + request["content"][0] + f" but the directory already existed")
                             else:
                                 os.mkdir("Permissions/" + userclass.username + "/" + directory + "/" + request["content"][0])
                                 os.mkdir("Files/" + userclass.username + "/" + directory + "/" + request["content"][0])
                                 Security.MakePermissions(userclass.userid, False, userclass.username + "/" + directory + "/" + request["content"][0] + "/dir.perm", 7)
-                                user.Send({"message":"<OK>", "content":"Directory created"}, True)
+                                user.Send({"message":"<OK>", "content":"Directory created", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{directory}/" + request["content"][0] + f" successfully")
                     case "cd":
                         if "cd" in self.COMMANDS:
@@ -388,80 +395,132 @@ class Server:
                                 if os.path.exists("Files/" + userclass.username + "/" + directory):
                                     if os.path.isdir("Files/" + userclass.username + "/" + directory):
                                         if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory)[1]:
-                                            user.Send({"message":"<OK>", "content":""}, True)
+                                            user.Send({"message":"<OK>", "content":"", "hasshare": self.CheckNotif(userclass)}, True)
                                             Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" moving to {directory}")
                                         else:
                                             Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" moving to {directory} but was blocked due to not having the correct permissions")
                                             directory = olddirectory
-                                            user.Send({"message":"<OK>", "content":"You do not have permission to access this directory"}, True)
+                                            user.Send({"message":"<OK>", "content":"You do not have permission to access this directory", "hasshare": self.CheckNotif(userclass)}, True)
                                     else:
                                         Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" moving to {directory} but this is not a directory")
                                         directory = olddirectory
-                                        user.Send({"message":"<OK>", "content":"This is not a directory"}, True)
+                                        user.Send({"message":"<OK>", "content":"This is not a directory", "hasshare": self.CheckNotif(userclass)}, True)
                                 else:
                                     Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" moving to {directory} but this does not exist")
                                     directory = olddirectory
-                                    user.Send({"message":"<OK>", "content":"This file/directory does not exist"}, True)
+                                    user.Send({"message":"<OK>", "content":"This file/directory does not exist", "hasshare": self.CheckNotif(userclass)}, True)
                             else:
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" moving to an invalid directory thus was blocked")
                                 directory = olddirectory
-                                user.Send({"message":"<OK>", "content":"This file/directory is not valid"}, True)
+                                user.Send({"message":"<OK>", "content":"This file/directory is not valid", "hasshare": self.CheckNotif(userclass)}, True)
                     case "rm":
                         if "rm" in self.COMMANDS:
                             removedir, valid = GetDir(userclass, request, directory)
                             if valid:
                                 os.system(f"rm -rf Files/{userclass.username}/{removedir}")
                                 os.system(f"rm -rf Permissions/{userclass.username}/{removedir}")
-                                user.Send({"message":"<OK>", "content":"File/directory removed"}, True)
+                                user.Send({"message":"<OK>", "content":"File/directory removed", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" removing Files/{userclass.username}/{removedir} and Permissions/{userclass.username}/{removedir}")
                             else:
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" removing an invalid directory thus was blocked")
                                 directory = olddirectory
-                                user.Send({"message":"<OK>", "content":"This file/directory is not valid"}, True)
+                                user.Send({"message":"<OK>", "content":"This file/directory is not valid", "hasshare": self.CheckNotif(userclass)}, True)
                     case "put":
                         if "put" in self.COMMANDS:
                             if request["content"][0] == "dir.perm":
-                                user.Send({"message":"<OK>", "content":"You cannot name a file dir.perm"}, True)
+                                user.Send({"message":"<OK>", "content":"You cannot name a file dir.perm", "hasshare": self.CheckNotif(userclass)}, True)
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on a dir.perm file thus was blocked")
                             else:
                                 user.Send({"message":"<WAITING>"}, True)
                                 msg = user.RecieveAll()
-                                if Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + directory + "/" + msg["name"].split("/")[-1])[2]:
-                                    if msg["type"] == 0:
-                                        with open("Files/" + userclass.username + "/" + msg["name"].split("/")[-1], "w") as f:
-                                            f.write(msg["content"])
-                                        Security.MakePermissions(userclass.userid, False, userclass.username + "/" + directory + "/" + msg["name"].split("/")[-1], 7)
-                                    else:
-                                        os.mkdir("Permissions/" + userclass.username + "/" + directory + "/" + msg["name"].split("/")[-1])
-                                        Security.MakePermissions(userclass.userid, False, userclass.username + "/" + directory + "/" + msg["name"].split("/")[-1] + "/dir.perm", 7)
-                                    user.Send({"message":"<WAITING>"}, True)
-                                    msg = user.RecieveAll()
-                                    user.Send({"message":"<OK>", "content":"File has been sucessfully written"}, True)
-                                    Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{directory}/" + msg["name"].split("/")[-1] + f" successfully")
+                                failed = False
+                                while msg["message"] != "<DONE>" and failed == False:
+                                    msg, failed = FileTransfer.RecieveFileServer(userclass, self.grouparray, directory, msg, user, failed, self.logslock, request)
+                                if not failed:
+                                    user.Send({"message":"<OK>", "content":"File has been sucessfully written", "hasshare": self.CheckNotif(userclass)}, True)
                                 else:
-                                    user.Send({"message":"<OK>", "content":"You do not have permission to write to this file"}, True)
-                                    Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{directory}/" + msg["name"].split("/")[-1] + f" but did not have permission to do so")
+                                    user.Send({"message":"<OK>", "content":"Some or all files failed to write", "hasshare": self.CheckNotif(userclass)}, True)   
                     case "get":
                         if "get" in self.COMMANDS:
                             uploaddir, valid = GetDir(userclass, request, directory)
                             if valid:
                                 if os.path.exists(f"Files/{userclass.username}/{uploaddir}"):
-                                    user.Send({"message":"<OK>", "content":"Continue"}, True)
-                                    FileTransfer.SendFileServer(userclass, self.grouparray, uploaddir, user, False)
-                                    user.Send({"message": "<DONE>"}, True)
+                                    FileTransfer.SendFileServer(userclass, self.grouparray, uploaddir, user, len(uploaddir.split("/")), True)
+                                    user.Send({"message": "<DONE>", "hasshare": self.CheckNotif(userclass)}, True)
                                     Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{uploaddir} successfully")
                                 else:
                                     Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" getting an non-existant file or directory thus was blocked")
-                                    user.Send({"message":"<OK>", "content":"This file/directory does not exist"}, True)
+                                    user.Send({"message":"<DONE>", "content":"This file/directory does not exist", "hasshare": self.CheckNotif(userclass)}, True)
                             else:
                                 Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" getting an invalid file or directory thus was blocked")
-                                user.Send({"message":"<OK>", "content":"This file/directory is not valid"}, True)
+                                user.Send({"message":"<DONE>", "content":"This file/directory is not valid", "hasshare": self.CheckNotif(userclass)}, True)
                     case "checkperm":
                         if "checkperm" in self.COMMANDS:
                             checkdir, valid = GetDir(userclass, request, directory)
                             perms = Security.CheckPermissions(userclass, self.grouparray, userclass.username + "/" + checkdir)
-                            user.Send({"message":"<OK>", "content":f"Access:{perms[0]}\nRead:{perms[1]}\nWrite:{perms[2]}"}, True)
+                            user.Send({"message":"<OK>", "content":f"Access:{perms[0]}\nRead:{perms[1]}\nWrite:{perms[2]}", "hasshare": self.CheckNotif(userclass)}, True)
                             Logging.Log(self.logslock, f"{userclass.username} performed " + request["command"] + f" on Files/{userclass.username}/{checkdir} successfully")
+                    case "share":
+                        if "share" in self.COMMANDS:
+                            sharedir, valid = GetDir(userclass, request, directory)
+                            sharee = request["content"][1]
+                            isgroup = request["content"][2] == "group"
+                            isuser = not isgroup
+                            permissions = int(request["content"][3])
+                            if isgroup:
+                                shareeid = self.grouparray.GetGroupID(sharee)
+                            else:
+                                shareeid = self.userarray.GetUserID(sharee)
+                            FileTransfer.Share(sharedir, userclass, shareeid, isuser, isgroup, permissions)
+                            if isuser:
+                                if not shareeid in self.usernotifarray:
+                                    with self.usernotiflock:
+                                        self.usernotifarray.append(shareeid)
+                            user.Send({"message":"<OK>", "content":f"Successfully shared", "hasshare": self.CheckNotif(userclass)}, True)
+                            Logging.Log(self.logslock, f"{userclass.username} shared Files/{userclass.username}/{sharedir} to {sharee} successfully")
+                    case "checkshare":
+                        if "checkshare" in self.COMMANDS:
+                            try:
+                                with open("User.share", "r") as f:
+                                    usershare = f.read().split("\n")[1:]
+                                shares = []
+                                for share in usershare:
+                                    if share.split(",")[1] == str(userclass.userid):
+                                        shares.append([self.userarray.GetUsername(int(share.split(",")[0])), share.split(",")[4].split("/")[-1]])
+                                shares = "\n".join([" with ".join(share) for share in shares])
+                                user.Send({"message":"<OK>", "content":f"You have shares from:\n{shares}", "hasshare": self.CheckNotif(userclass)}, True)
+                                Logging.Log(self.logslock, f"{userclass.username} requested shares but had none")
+                            except IndexError:
+                                user.Send({"message":"<OK>", "content":f"No shares", "hasshare": self.CheckNotif(userclass)}, True)
+                                Logging.Log(self.logslock, f"{userclass.username} requested shares but had none")
+                    case "receive":
+                        if "receive" in self.COMMANDS:
+                            try:
+                                try:
+                                    temp = {"content": [request["content"][2]]}
+                                except:
+                                    temp = {"content": []}
+                                enddir, valid = GetDir(userclass, temp, directory)
+                                username = request["content"][0]
+                                requesteddir = request["content"][1]
+                                with open("User.share", "r") as f:
+                                    usershare = f.read().split("\n")[1:]
+                                shares = []
+                                for share in usershare:
+                                    if share.split(",")[1] == str(userclass.userid) and share.split(",")[4].split("/")[-1] == requesteddir and share.split(",")[0] == str(self.userarray.GetUserID(username)):
+                                        isdir = False
+                                        if os.path.isdir("Files/" + username + "/" + enddir):
+                                            isdir = True
+                                        try:
+                                            os.symlink(os.getcwd() + "/Files/" + username + "/" + requesteddir, os.getcwd() + "/Files/" + userclass.username + "/" + enddir, isdir)
+                                            os.symlink(os.getcwd() + "/Permissions/" + username + "/" + requesteddir, os.getcwd() + "/Permissions/" + userclass.username + "/" + enddir, isdir)
+                                            user.Send({"message":"<OK>", "content":f"The share has been successfully accepted", "hasshare": self.CheckNotif(userclass)}, True)
+                                            Logging.Log(self.logslock, f"{userclass.username} requested shares but had none")
+                                        except OSError:
+                                            user.Send({"message":"<OK>", "content":f"There is already a file by the name of {enddir}", "hasshare": self.CheckNotif(userclass)}, True)
+                            except IndexError:
+                                user.Send({"message":"<OK>", "content":f"No shares", "hasshare": self.CheckNotif(userclass)}, True)
+                                Logging.Log(self.logslock, f"{userclass.username} requested shares but had none")
             elif request["message"] == "<LOGON>":
                 userclass = self.userarray.GetUser(request["username"], request["passhash"])
                 if userclass != None:

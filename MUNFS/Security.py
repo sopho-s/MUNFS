@@ -30,13 +30,20 @@ class UserArray:
     def __init__(self, users):
         self.users = users
     def GetUser(self, username, passwordhash):
-        print(username)
-        print(passwordhash)
         for user in self.users:
             if user.username == username:
-                print(user.passwordhash)
                 if user.passwordhash == passwordhash:
                     return user
+        return None
+    def GetUserID(self, username):
+        for user in self.users:
+            if user.username == username:
+                return user.userid
+        return None
+    def GetUsername(self, id):
+        for user in self.users:
+            if user.userid == id:
+                return user.username
         return None
     def AddUser(self, user):
         self.users.append(user)
@@ -57,12 +64,14 @@ class GroupArray:
         return groups
 
 def CheckPermissions(user, groups, file):
+    if file == "":
+        return (True, True, True)
     if os.path.isdir("Permissions/" + file):
         permissionfile = "Permissions/" + file + "/dir.perm" 
     else:
         permissionfile = "Permissions/" + file
     if not os.path.exists(permissionfile):
-        return (True, True, True)
+        return CheckPermissions(user, groups, file.split("/")[:len(file.split("/"))-1])
     permissions = pd.read_csv(permissionfile)
     access = False
     read = False
@@ -97,6 +106,17 @@ def MakePermissions(id, isgroup, file, permissions):
             f.write(f"{access},{read},{write},{isgroup},{not isgroup},{id}")
     return True
         
+def AddPermissions(id, isgroup, file, permissions):
+    permissionfile = "Permissions/" + file
+    if os.path.exists(permissionfile):
+        with open(permissionfile, "a") as f:
+            access = "true" if permissions & 1 == 1 else "false"
+            read = "true" if permissions & 2 == 2 else "false"
+            write = "true" if permissions & 4 == 4 else "false"
+            f.write(f"\n{access},{read},{write},{isgroup},{not isgroup},{id}")
+        return True
+    else:
+        return False
 
 def LoadUsers():
     userarray = []

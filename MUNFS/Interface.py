@@ -74,6 +74,15 @@ def interface(client, uid):
                 case "checkperm":
                     output = client.SendCommandBasic("checkperm", request[1:])
                     print(output)
+                case "share":
+                    output = client.SendCommandBasic("share", request[1:])
+                    print(output)
+                case "checkshare":
+                    output = client.SendCommandBasic("checkshare", request[1:])
+                    print(output)
+                case "receive":
+                    output = client.SendCommandBasic("receive", request[1:])
+                    print(output)
     except KeyboardInterrupt:
         print("\nIf you wish to exit use the command exit")
         interface(client, uid)
