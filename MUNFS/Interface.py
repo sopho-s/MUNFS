@@ -1,12 +1,13 @@
 from . import Network
 from getpass import getpass
 import time
+import shlex
 
 def interface(client, uid):
     try:
         while True:
             request = input("> ")
-            request = request.split(" ")
+            request = shlex.split(request)
             match request[0]:
                 case "help":
                     commands = client.SendCommandBasic("help")
