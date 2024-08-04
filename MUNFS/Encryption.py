@@ -50,7 +50,7 @@ def Getpartrand():
 
 def GenerateRandom():
     stringkey = ""
-    for _ in range(20):
+    for _ in range(10):
         stringkey += str(Getpartrand())
     keylen = len(stringkey)
     output = 0
@@ -95,15 +95,13 @@ def DecryptRSA(data, d, n):
     return pow(data, d, n)
 
 def EncryptionKeyGen():
-    strkey = str(GenerateRandom()) + str(GenerateRandom())
+    strkey = str(GenerateRandom())
     key1 = (int(strkey) + Getpartrand()) % (2 ** 128)
-    strkey = str(GenerateRandom()) + str(GenerateRandom())
+    strkey = str(GenerateRandom())
     key2 = (int(strkey) + Getpartrand()) % (2 ** 128)
-    strkey = str(GenerateRandom()) + str(GenerateRandom())
-    key3 = (int(strkey) + Getpartrand()) % (2 ** 128)
     strkey = str(GenerateRandom()) + str(GenerateRandom()) + str(GenerateRandom()) + str(GenerateRandom()) + str(GenerateRandom())
     key4 = (int(strkey) + Getpartrand()) % (2 ** 128)
-    return key1, key2, key3, key4
+    return key1, key2, 0, key4
 
 def Encrypt(data, key1, key2, key3, key4):
     datalist = []

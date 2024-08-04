@@ -8,7 +8,7 @@ class Data:
             self.data = json.dumps(self.data)
     def JSONify(self):
         if len(self.data) == 0:
-            return
+            self.data = {"content": "test"}
         if type(self.data) != dict:
             self.data = json.loads(self.data)
     def Encode(self):

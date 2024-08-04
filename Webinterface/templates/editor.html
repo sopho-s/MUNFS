@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Data for {{username}}</title>
+<style>
+    .inline {
+        display: inline;
+    }
+
+    .link-button {
+        background: none;
+        border: none;
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 1em;
+        font-family: serif;
+    }
+    .link-button:focus {
+        outline: none;
+    }
+    .link-button:active {
+        color:red;
+    }
+</style>
+</head>
+<body>
+    <form method="POST" action="/interface">
+        <input type="hidden" name="share" value="0">
+        <input type="hidden" name="type" value="0">
+        <select name="permissions">
+            <option value="1">access</option>
+            <option value="3">access+read</option>
+            <option value="7">access+read+write</option>
+        </select>
+        <input type="text" name="sharee" placeholder="Sharee">
+        <button type="submit" name="fullpath" value="{{cwd}}">Share</button>
+    </form>
+    <p>CWD: /{{cwd}}</p>
+    <form method="POST" action="/interface" class="inline">
+        <input type="hidden" name="type" value="1">
+        <button type="submit" name="fullpath" value="{{cwd}}/../" class="link-button">
+            ../
+        </button>
+    </form>
+    <form method="POST" action="/interface">
+        <input type="hidden" name="change" value="1">
+        <input type="hidden" name="type" value="0">
+        <textarea name="text" rows="10" cols="100">{{file}}</textarea><br>
+        <button type="submit" name="fullpath" value="{{cwd}}">Change</button>
+    </form>
+    <br>
+    <form method="POST" action="/interface">
+        <input type="hidden" name="delete" value="1">
+        <input type="hidden" name="type" value="1">
+        <button type="submit" name="fullpath" value="{{cwd}}">Delete</button>
+    </form>
+</body>

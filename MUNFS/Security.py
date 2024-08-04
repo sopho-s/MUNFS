@@ -71,7 +71,7 @@ def CheckPermissions(user, groups, file):
     else:
         permissionfile = "Permissions/" + file
     if not os.path.exists(permissionfile):
-        return CheckPermissions(user, groups, file.split("/")[:len(file.split("/"))-1])
+        return CheckPermissions(user, groups, "/".join(file.split("/")[:len(file.split("/"))-1]))
     permissions = pd.read_csv(permissionfile)
     access = False
     read = False
